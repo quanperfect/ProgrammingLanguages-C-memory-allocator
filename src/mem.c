@@ -18,9 +18,15 @@ void debug(const char* fmt, ... );
 extern inline block_size size_from_capacity( block_capacity cap );
 extern inline block_capacity capacity_from_size( block_size sz );
 
-static bool            block_is_big_enough( size_t query, struct block_header* block ) { return block->capacity.bytes >= query; }
-static size_t          pages_count   ( size_t mem )                      { return mem / getpagesize() + ((mem % getpagesize()) > 0); }
-static size_t          round_pages   ( size_t mem )                      { return getpagesize() * pages_count( mem ) ; }
+static bool block_is_big_enough(size_t query, struct block_header* block) { 
+	return block->capacity.bytes >= query; 
+}
+static size_t pages_count(size_t mem) { 
+	return mem / getpagesize() + ((mem % getpagesize()) > 0); 
+}
+static size_t round_pages(size_t mem) { 
+	return getpagesize() * pages_count( mem ) ; 
+}
 
 static void block_init( void* restrict addr, block_size block_sz, void* restrict next ) {
   *((struct block_header*)addr) = (struct block_header) {
@@ -30,10 +36,11 @@ static void block_init( void* restrict addr, block_size block_sz, void* restrict
   };
 }
 
-static size_t region_actual_size( size_t query ) { return size_max( round_pages( query ), REGION_MIN_SIZE ); }
+static size_t region_actual_size(size_t query) { 
+	return size_max( round_pages( query ), REGION_MIN_SIZE ); 
+}
 
-extern inline bool region_is_invalid( const struct region* r );
-
+extern inline bool region_is_invalid(const struct region* r);
 
 
 static void* map_pages(void const* addr, size_t length, int additional_flags) {
@@ -79,21 +86,24 @@ static bool block_splittable( struct block_header* restrict block, size_t query)
 
 static bool split_if_too_big( struct block_header* block, size_t query ) {
   if (!block_splittable(block, query)) {
+		//printf("split false\n");
 		return false;
 	}
 	else {
+		//printf("split true\n");
 		if (query < BLOCK_MIN_CAPACITY) {
 			query = BLOCK_MIN_CAPACITY;
 		}
-		
-		void* new_block_addr = block_after(block);  // Адрес нового (второго) блока
 		block_size free_new_block_size = {block->capacity.bytes - query};
-
-		/* Первый блок размером по запросу, второй оставшийся размер. */
 		block->capacity.bytes = query; 
 
-		block->next = new_block_addr; // Первому блоку даем адрес второго блока
+		void* new_block_addr = block_after(block);  // Адрес нового (второго) блока
+		//block_size free_new_block_size = {block->capacity.bytes - query};
+
+		// Первый блок размером по запросу, второй оставшийся размер. 
 		block_init(new_block_addr, free_new_block_size, NULL); // Инициализируем второй блок
+		block->next = new_block_addr; // Первому блоку даем адрес второго блока
+		return true;
 	}
 }
 
@@ -114,14 +124,14 @@ static bool mergeable(struct block_header const* restrict fst, struct block_head
 }
 
 static bool try_merge_with_next( struct block_header* block ) {
-    if (!mergeable(block, block->next)) {
-			return false;
+		if ((block->next) && (mergeable(block,block->next))) {
+	    block->capacity.bytes = block->capacity.bytes + block->next->capacity.bytes;
+	    block->next = block->next->next;
+	    return true;
 		}
-    else {
-		  block->capacity.bytes += size_from_capacity(block->next->capacity).bytes;
-		  block->next = block->next->next;
-		  return true;
-    }
+		else {
+			return false; // очевидно, что если нет следующего блока или мердж невозможен, то false
+		}
 }
 
 
@@ -182,13 +192,14 @@ static struct block_header* memalloc( size_t query, struct block_header* heap_st
 		query = BLOCK_MIN_CAPACITY;
 	}
 	struct block_search_result result = try_memalloc_existing(query, heap_start);
-	
   switch (result.type) {
     case BSR_FOUND_GOOD_BLOCK:
-			split_if_too_big(res.block, query);
+			//printf("BSR_FOUND_GOOD_BLOCK CASE\n");
+			split_if_too_big(result.block, query);
       result.block->is_free = false;
       return result.block;
     case BSR_REACHED_END_NOT_FOUND:
+			//printf("BSR_REACHED_END_NOT_FOUND CASE\n");
       grow_heap(result.block, query);
       result = try_memalloc_existing(query, heap_start);
       if (result.type != BSR_FOUND_GOOD_BLOCK) {
@@ -202,23 +213,28 @@ static struct block_header* memalloc( size_t query, struct block_header* heap_st
       return NULL;
     default:
       return NULL;
+	}
 }
 
-}
-
-void* _malloc( size_t query ) {
-  struct block_header* const addr = memalloc( query, (struct block_header*) HEAP_START );
+void* _malloc(size_t query, void* heap_start) {
+  struct block_header* const addr = memalloc( query, (struct block_header*) heap_start );
   if (addr) return addr->contents;
   else return NULL;
 }
 
-static struct block_header* block_get_header(void* contents) {
-  return (struct block_header*) (((uint8_t*)contents)-offsetof(struct block_header, contents));
+struct block_header *block_get_header(void *contents) {
+    return (struct block_header *) (((uint8_t *) contents) - offsetof(struct block_header, contents));
 }
 
-void _free( void* mem ) {
-  if (!mem) return ;
-  struct block_header* header = block_get_header( mem );
-  header->is_free = true;
-  while(try_merge_with_next(header));
+
+void _free(void *mem) {
+    if (!mem) return;
+    struct block_header *header = block_get_header(mem);
+    header->is_free = true;
+    while (header) {
+        try_merge_with_next(header);
+        header = header->next;
+    }
+
 }
+

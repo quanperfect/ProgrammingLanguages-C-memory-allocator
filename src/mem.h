@@ -11,7 +11,7 @@
 
 #define HEAP_START ((void*)0x04040000)
 
-void* _malloc( size_t query );
+void* _malloc( size_t query, void* heap_start );
 void  _free( void* mem );
 void* heap_init( size_t initial_size );
 
@@ -19,5 +19,6 @@ void* heap_init( size_t initial_size );
 
 void debug_struct_info( FILE* f, void const* address );
 void debug_heap( FILE* f,  void const* ptr );
+struct block_header *block_get_header(void *contents);
 
 #endif
