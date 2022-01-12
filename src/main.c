@@ -30,9 +30,13 @@ int main() {
 	else {
 		if (counter == 0) {
 			printf(MAG "\n -[   "RED"NO TESTS"MAG " WERE SUCCESSFUL   ]-\n");
+			return(1);
 		}
 		else {
 			printf(MAG "\n -[   "RED"NOT ALL TESTS"MAG " WERE SUCCESSFUL   ]-\n");
+			return(1);
 		}
 	}
+	
+	return 0;
 }
