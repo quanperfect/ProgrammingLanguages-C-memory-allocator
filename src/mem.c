@@ -181,7 +181,7 @@ static struct block_header* grow_heap( struct block_header* restrict last, size_
 		query = BLOCK_MIN_CAPACITY;
 	}
 
-	struct region grew_region = alloc_region(block_after(last), query + size_from_capacity(last->capacity).bytes);
+	struct region grew_region = alloc_region(block_after(last), query);
 	last->next = grew_region.addr;
 	if (try_merge_with_next(last)) {
 		return last;
