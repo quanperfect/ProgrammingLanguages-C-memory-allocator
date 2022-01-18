@@ -13,21 +13,28 @@ bool test4() {
 	printf(BLU "\n\n TEST n4 (new region due to running out of memory) \n\n" RESET);
 
   debug_heap(stdout, heap);
-	size_t block_size = 4000; 
+	size_t block_size = 6000; 
 	
   void *test1_block = _malloc(block_size, heap);
 	if (test1_block == NULL) {
 		printf(RED "_malloc test1_block returned null\n" RESET);
+		debug_heap(stdout, heap);
+		return false;
 	}
   void *test2_block = _malloc(block_size, heap);
 	if (test2_block == NULL) {
 		printf(RED "_malloc test2_block returned null\n" RESET);
+	  debug_heap(stdout, heap);
+		return false;		
 	}
-  debug_heap(stdout, heap);
+
   void *test3_block = _malloc(block_size/2, heap);
 	if (test3_block == NULL) {
 		printf(RED "_malloc test3_block returned null\n" RESET);
+		debug_heap(stdout, heap);
+		return false;
 	}
+	debug_heap(stdout, heap);
 
   _free(test2_block);
   _free(test3_block);

@@ -181,8 +181,7 @@ static struct block_header* grow_heap( struct block_header* restrict last, size_
 		query = BLOCK_MIN_CAPACITY;
 	}
 
-  //struct region grew_region = alloc_region(block_after(last), query + offsetof(struct block_header, contents));
-	struct region grew_region = alloc_region(last + size_from_capacity(last->capacity).bytes, query);
+	struct region grew_region = alloc_region(block_after(last), query + size_from_capacity(last->capacity).bytes);
 	last->next = grew_region.addr;
 	if (try_merge_with_next(last)) {
 		return last;
@@ -192,6 +191,7 @@ static struct block_header* grow_heap( struct block_header* restrict last, size_
 
 /*  Реализует основную логику malloc и возвращает заголовок выделенного блока */
 static struct block_header* memalloc( size_t query, struct block_header* heap_start) {
+	
 	if (query < BLOCK_MIN_CAPACITY) { 
 		query = BLOCK_MIN_CAPACITY;
 	}
