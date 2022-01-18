@@ -125,7 +125,8 @@ static bool mergeable(struct block_header const* restrict fst, struct block_head
 
 static bool try_merge_with_next( struct block_header* block ) {
 		if ((block->next) && (mergeable(block,block->next))) {
-	    block->capacity.bytes = block->capacity.bytes + block->next->capacity.bytes;
+	    //block->capacity.bytes = block->capacity.bytes + block->next->capacity.bytes;
+			block->capacity.bytes += size_from_capacity(block->next->capacity).bytes;
 	    block->next = block->next->next;
 	    return true;
 		}
@@ -144,23 +145,25 @@ struct block_search_result {
 
 
 static struct block_search_result find_good_or_last  ( struct block_header* restrict block, size_t sz )    {
+	struct block_header* block_behind = NULL;	
+	
 	while (block != NULL) {
+		while (try_merge_with_next(block));
 		if ((block_is_big_enough(sz, block)) && block->is_free) {
 			return (struct block_search_result) { 
 				.type = BSR_FOUND_GOOD_BLOCK, 
 				.block = block 
 			};
 		}
-		if (block->next == NULL) {
-		  return (struct block_search_result) { 
-				.type = BSR_REACHED_END_NOT_FOUND, 
-				.block = block };
-		}
+
+		block_behind = block;
 		block = block->next;
 	}
+
 	return (struct block_search_result) { 
-		.type = BSR_CORRUPTED, 
-		.block = NULL
+		//.type = BSR_CORRUPTED, 
+		.type = BSR_REACHED_END_NOT_FOUND,
+		.block = block_behind
 	};
 
 }
@@ -178,8 +181,9 @@ static struct block_header* grow_heap( struct block_header* restrict last, size_
 		query = BLOCK_MIN_CAPACITY;
 	}
 
-  struct region grew_region = alloc_region(block_after(last), query + offsetof(struct block_header, contents));
-  last->next = grew_region.addr;
+  //struct region grew_region = alloc_region(block_after(last), query + offsetof(struct block_header, contents));
+	struct region grew_region = alloc_region(last + size_from_capacity(last->capacity).bytes, query);
+	last->next = grew_region.addr;
 	if (try_merge_with_next(last)) {
 		return last;
 	}  
@@ -228,13 +232,11 @@ struct block_header *block_get_header(void *contents) {
 
 
 void _free(void *mem) {
-    if (!mem) return;
-    struct block_header *header = block_get_header(mem);
+    if (!mem) {
+			return;
+		}
+    struct block_header* header = block_get_header(mem);
     header->is_free = true;
-    while (header) {
-        try_merge_with_next(header);
-        header = header->next;
-    }
-
+		while (try_merge_with_next(header));
 }
 
