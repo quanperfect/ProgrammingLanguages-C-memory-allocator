@@ -7,10 +7,11 @@
 #include "../mem.h"
 #include "../mem_internals.h"
 
+extern void* heap;
 // Test of a simple usage
 bool test1() {
   printf(BLU " TEST n1 (simple usage)\n" RESET);
-	void *heap = heap_init(1000);
+	
 	void* test_allocation = _malloc(2002, heap);
   debug_heap(stdout, heap);
 	if (test_allocation == NULL) {

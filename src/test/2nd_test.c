@@ -5,11 +5,11 @@
 #include "../mem.h"
 #include "../mem_internals.h"
 
+extern void* heap;
 
 // Free 1 block from 2 blocks
 bool test2() {
 	printf(BLU "\n\n TEST n2 (freeing 1 block from 2 blocks) \n\n" RESET);
-	void *heap = heap_init(10000);
 
 	size_t test_block_size = 1775; // American Revolution massive events
 	void* test_block = _malloc(test_block_size, heap); 

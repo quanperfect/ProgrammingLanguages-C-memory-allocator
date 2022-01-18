@@ -7,10 +7,12 @@
 #include "../mem.h"
 #include "../mem_internals.h"
 
+extern void* heap;
+
 // Free 2 blocks from multiple blocks
 bool test3() {
 	printf(BLU "\n\n TEST n3 (freeing 2 block from 3 blocks) \n\n" RESET);
-	void *heap = heap_init(4000); // random number
+
 	size_t first_block_size = 1765; // the start of the American Revolution 
 	size_t second_block_size = 1791; // the end of the American Revolution
 	void *test1_block = _malloc(first_block_size, heap); // the start of the American Revolution

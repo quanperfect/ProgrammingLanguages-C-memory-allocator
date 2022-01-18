@@ -10,14 +10,13 @@
 
 // End of the memory, the old memory region can't be extended because of a different allocated address range.
 // Allocating the new region somewhere else.
-
+extern void* heap;
 
 bool test5() {
 	printf(BLU "\n\n TEST n5 (allocating the new region somewhere else due to a different allocated address range) \n\n" RESET);
-	void* first_heap = heap_init(5000);
 
-  debug_heap(stdout, first_heap);
-  void* first_test_block = _malloc(3000, first_heap);
+  debug_heap(stdout, heap);
+  void* first_test_block = _malloc(3000, heap);
   struct block_header *firsttestblock = (first_test_block);
 
   void* first_testblock = firsttestblock + 9900;
@@ -29,10 +28,10 @@ bool test5() {
 		return false;
 	}
 
-  debug_heap(stdout, first_heap);
+  debug_heap(stdout, heap);
 
-	_malloc(5000, first_heap);
-	debug_heap(stdout, first_heap);
+	_malloc(5000, heap);
+	debug_heap(stdout, heap);
 
 	printf(GRN "\n[ TEST n5 successfully passed ]\n\n" RESET);
 	return true;

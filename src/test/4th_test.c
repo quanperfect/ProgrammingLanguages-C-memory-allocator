@@ -3,19 +3,17 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-
-
-
-
 #include "../mem.h"
 #include "../mem_internals.h"
+
+extern void* heap;
 //  printf(RED "red\n"     RESET);
 // New regions extends previous region due to running out of memory
 bool test4() {
 	printf(BLU "\n\n TEST n4 (new region due to running out of memory) \n\n" RESET);
-	void *heap = heap_init(10000); 
+
   debug_heap(stdout, heap);
-	size_t block_size = 6000; 
+	size_t block_size = 4000; 
 	
   void *test1_block = _malloc(block_size, heap);
 	if (test1_block == NULL) {
