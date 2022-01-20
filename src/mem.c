@@ -1,4 +1,7 @@
 #define _DEFAULT_SOURCE
+#include "mem_internals.h"
+#include "mem.h"
+#include "util.h"
 
 #include <assert.h>
 #include <stdarg.h>
@@ -9,10 +12,6 @@
 #include <stddef.h>
 #include <sys/mman.h>
 
-
-#include "mem_internals.h"
-#include "mem.h"
-#include "util.h"
 
 void debug_block(struct block_header* b, const char* fmt, ... );
 void debug(const char* fmt, ... );

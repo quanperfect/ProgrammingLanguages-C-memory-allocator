@@ -3,8 +3,8 @@
 #include "../mem_internals.h"
 
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 
 
