@@ -18,6 +18,5 @@ void* heap_init( size_t initial_size );
 
 void debug_struct_info( FILE* f, void const* address );
 void debug_heap( FILE* f,  void const* ptr );
-struct block_header *block_get_header(void *contents);
 
 #endif
