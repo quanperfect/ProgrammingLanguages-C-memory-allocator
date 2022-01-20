@@ -112,8 +112,11 @@ static bool split_if_too_big( struct block_header* block, size_t query ) {
 
 /*  --- Слияние соседних свободных блоков --- */
 
-static void* block_after( struct block_header const* block )              {
-  return  (void*) ( (size_t*) block->contents + (size_t*) block->capacity.bytes);
+static void* block_after( struct block_header const* block ) {
+	if (block->capacity.bytes) {
+		return  (void*) (block->contents + block->capacity.bytes);
+	}
+  return  (void*) (block->contents);
 }
 static bool blocks_continuous (
                                struct block_header const* fst,
@@ -133,7 +136,7 @@ static bool try_merge_with_next( struct block_header* block ) {
 	    return true;
 		}
 		else {
-			return false; // очевидно, что если нет следующего  блока или мердж невозможен, то false
+			return false; // очевидно, что если нет следующего блока или мердж невозможен, то false
 		}
 }
 
