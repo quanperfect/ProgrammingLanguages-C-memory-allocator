@@ -133,7 +133,7 @@ static bool try_merge_with_next( struct block_header* block ) {
 	    return true;
 		}
 		else {
-			return false; // очевидно, что если нет следующего блока или мердж невозможен, то false
+			return false; // очевидно, что если нет следующего  блока или мердж невозможен, то false
 		}
 }
 
