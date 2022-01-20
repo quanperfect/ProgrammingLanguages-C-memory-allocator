@@ -113,7 +113,7 @@ static bool split_if_too_big( struct block_header* block, size_t query ) {
 /*  --- Слияние соседних свободных блоков --- */
 
 static void* block_after( struct block_header const* block )              {
-  return  (void*) (block->contents + block->capacity.bytes);
+  return  (void*) ( (size_t*) block->contents + (size_t*) block->capacity.bytes);
 }
 static bool blocks_continuous (
                                struct block_header const* fst,
