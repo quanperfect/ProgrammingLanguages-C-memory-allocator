@@ -4,13 +4,13 @@
 #include "util.h"
 
 #include <assert.h>
+#include <errno.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <stddef.h>
 #include <sys/mman.h>
+#include <stdio.h>
 
 
 void debug_block(struct block_header* b, const char* fmt, ... );
