@@ -1,12 +1,9 @@
-#include <stdarg.h>
 #define _DEFAULT_SOURCE
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/mman.h>
-#include <stddef.h>
-#include <errno.h>
-#include <stdlib.h>
+
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "mem_internals.h"
 #include "mem.h"
@@ -44,7 +41,7 @@ extern inline bool region_is_invalid(const struct region* r);
 
 
 static void* map_pages(void const* addr, size_t length, int additional_flags) {
-  return mmap( (void*) addr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | additional_flags , 0, 0 );
+  return mmap( (void*) addr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | additional_flags , -1, 0 );
 }
 
 /*  аллоцировать регион памяти и инициализировать его блоком */
