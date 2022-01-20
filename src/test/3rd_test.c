@@ -1,11 +1,12 @@
 #include "test.h"
+#include "../mem.h"
+#include "../mem_internals.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../mem.h"
-#include "../mem_internals.h"
+
 
 extern void* heap;
 

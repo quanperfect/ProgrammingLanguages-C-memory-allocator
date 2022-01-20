@@ -1,12 +1,13 @@
 #include "test.h"
+#include "../mem.h"
+#include "../mem_internals.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 
-#include "../mem.h"
-#include "../mem_internals.h"
+
 
 // End of the memory, the old memory region can't be extended because of a different allocated address range.
 // Allocating the new region somewhere else.

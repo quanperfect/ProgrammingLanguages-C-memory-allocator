@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "mem_internals.h"
 #include "mem.h"
@@ -82,7 +83,7 @@ static bool block_splittable( struct block_header* restrict block, size_t query)
 }
 
 static bool split_if_too_big( struct block_header* block, size_t query ) {
-  if (!block_splittable(block, query)) {
+	if (!block_splittable(block, query)) {
 		//printf("split false\n");
 		return false;
 	}
@@ -203,15 +204,13 @@ static struct block_header* memalloc( size_t query, struct block_header* heap_st
 			//printf("BSR_REACHED_END_NOT_FOUND CASE\n");
       grow_heap(result.block, query);
       result = try_memalloc_existing(query, heap_start);
-      if (result.type != BSR_FOUND_GOOD_BLOCK) {
+			if (result.type != BSR_FOUND_GOOD_BLOCK) {
 				return NULL;
 			}
 			else {
       	result.block->is_free = false;
       	return result.block;
 			}
-    case BSR_CORRUPTED:
-      return NULL;
     default:
       return NULL;
 	}
