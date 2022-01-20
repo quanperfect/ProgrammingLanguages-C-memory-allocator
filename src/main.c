@@ -1,6 +1,8 @@
 #include "test/test.h"
-#include <stdio.h>
 #include "mem.h"
+
+#include <stdio.h>
+
 
 void* heap = 0;
 int main() {

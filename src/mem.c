@@ -1,10 +1,14 @@
 #define _DEFAULT_SOURCE
 
 #include <assert.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stddef.h>
+#include <sys/mman.h>
+
 
 #include "mem_internals.h"
 #include "mem.h"
