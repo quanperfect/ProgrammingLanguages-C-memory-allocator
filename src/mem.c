@@ -98,8 +98,10 @@ static bool split_if_too_big( struct block_header* block, size_t query ) {
 		}
 		block_size free_new_block_size = {block->capacity.bytes - query};
 		block->capacity.bytes = query; 
-
-		void* new_block_addr = block_after(block);  // Адрес нового (второго) блока
+		
+		if (block != NULL) {
+			void* new_block_addr = block_after(block);  // Адрес нового (второго) блока
+		}
 		//block_size free_new_block_size = {block->capacity.bytes - query};
 
 		// Первый блок размером по запросу, второй оставшийся размер. 
@@ -182,8 +184,9 @@ static struct block_header* grow_heap( struct block_header* restrict last, size_
   if (query < BLOCK_MIN_CAPACITY) {
 		query = BLOCK_MIN_CAPACITY;
 	}
-
-	struct region grew_region = alloc_region(block_after(last), query);
+	if (last != NULL) {
+		struct region grew_region = alloc_region(block_after(last), query);
+	}
 	last->next = grew_region.addr;
 	if (try_merge_with_next(last)) {
 		return last;
